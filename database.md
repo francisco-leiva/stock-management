@@ -1,23 +1,24 @@
 # BLANCO Y NEGRO DATA BASE
 
-## PRODUCT
+## PRODUCTS
 
-- Id / SKU
+- Id
+- SKU
+- Description
 - Id_Category
 - Id_Brand
 - Cost
-- Profit porcentage
-- IVA
+- Profit porcentage (only in web page)
 - Price
 - Creation_Date
 - Modification_Date
 
-## CATEGORY
+## CATEGORIES
 
 - Id
 - Name
 
-## BRAND
+## BRANDS
 
 - Id
 - Name
@@ -31,7 +32,7 @@
 - Prod_Price
 - Total
 
-## PAYMENT_METHOD
+## PAYMENT_METHODS
 
 - Id
 - Name (efectivo, transferencia, tarjeta)
@@ -47,7 +48,7 @@
 - Id
 - Name
 
-## BRANCH_STOCK
+## BRANCH_STOCKS
 
 - Id
 - Id_Branch
@@ -91,11 +92,10 @@ end;
 ### Then in JavaScript
 
 ```js
-const { data, error } = await supabase.rpc("transfer_stock", {
-  p_product_id: "uuid-del-producto",
-  p_from_branch: "uuid-de-tu-local",
-  p_to_branch: "uuid-del-local-empleado",
+const { data, error } = await supabase.rpc('transfer_stock', {
+  p_product_id: 'uuid-del-producto',
+  p_from_branch: 'uuid-de-tu-local',
+  p_to_branch: 'uuid-del-local-empleado',
   p_quantity: 5,
 });
 ```
-
