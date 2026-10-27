@@ -69,7 +69,7 @@ begin
     update branch_stock
     set quantity = quantity - v_item.quantity
     where product_id = v_item.product_id and branch_id = p_branch_id;
-    
+
     -- Opcional: Podrías agregar una validación aquí para asegurarte de que el stock no quede en negativo.
   end loop;
 
@@ -81,19 +81,24 @@ $$ language plpgsql;
 ### Example of how to use it
 
 ```js
-const handleCompleteSale = async (cartItems, totalAmount, currentBranchId, currentUserId) => {
+const handleCompleteSale = async (
+  cartItems,
+  totalAmount,
+  currentBranchId,
+  currentUserId,
+) => {
   // Preparamos los items en el formato que espera la función RPC (JSON)
-  const formattedItems = cartItems.map(item => ({
+  const formattedItems = cartItems.map((item) => ({
     product_id: item.id,
     quantity: item.quantity,
-    unit_price: item.price
+    unit_price: item.price,
   }));
 
   const { data, error } = await supabase.rpc('register_sale', {
     p_branch_id: currentBranchId,
     p_user_id: currentUserId,
     p_total_amount: totalAmount,
-    p_items: formattedItems
+    p_items: formattedItems,
   });
 
   if (error) {
@@ -114,8 +119,9 @@ const handleCompleteSale = async (cartItems, totalAmount, currentBranchId, curre
 
 ## PROFILES
 
-- Id (vinculado a auth.users en Supabase)
-- Branch_Id
+- Id
+- Id_User (vinculado a auth.users en Supabase)
+- Id_Branch
 - Role (admin, employee)
 
 ## BRANCHES (Sucursales)
@@ -170,7 +176,7 @@ const handleCreateProduct = async (e) => {
     p_sku: 'CAM-001',
     p_price: 25000,
     p_branch_id: 'uuid-de-la-sucursal', // ID del local donde entra este stock
-    p_initial_stock: 10                // Cantidad inicial
+    p_initial_stock: 10, // Cantidad inicial
   });
 
   if (error) {
