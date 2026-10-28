@@ -1,12 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabase';
+import { useNavigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
   component: Index,
 });
 
 function Index() {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,14 +18,15 @@ function Index() {
     setLoading(true);
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: 'valid.email@supabase.io',
-      password: 'example-password',
+      email: email,
+      password: password,
     });
 
     if (error) {
       alert(error.message);
     } else {
       alert('Successfully login!');
+      navigate({ to: '/dashboard' })
     }
     setLoading(false);
   };
