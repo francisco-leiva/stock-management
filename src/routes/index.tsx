@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import { supabase } from '@/utils/supabase';
@@ -13,9 +13,10 @@ function Index() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [session, setSession] = useState<Session | null>();
+
+  const emailInput = useRef<HTMLInputElement>(null);
+  const passwordInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getSession().then((n) => setSession(n));
@@ -28,6 +29,13 @@ function Index() {
   const handleLogin = async (event: React.ChangeEvent) => {
     event.preventDefault();
     setLoading(true);
+
+    const email = emailInput.current?.value;
+    const password = passwordInput.current?.value;
+
+    if (!email || !password) {
+      throw new Error('Form fields are incomplete');
+    }
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
@@ -50,17 +58,15 @@ function Index() {
         <input
           type="email"
           placeholder="Your email"
-          value={email}
           required={true}
-          onChange={(e) => setEmail(e.target.value)}
+          ref={emailInput}
         />
 
         <input
           type="password"
           placeholder="Your password"
-          value={password}
           required={true}
-          onChange={(e) => setPassword(e.target.value)}
+          ref={passwordInput}
         />
 
         <button disabled={loading}>
