@@ -12,15 +12,15 @@ export const Route = createFileRoute('/dashboard/')({
 function RouteComponent() {
   const navigate = useNavigate();
 
-  const [session, setSession] = useState<Session | null>()
+  const [session, setSession] = useState<Session | null>();
 
   useEffect(() => {
-    getSession().then(n => setSession(n))
+    getSession().then((n) => setSession(n));
 
     if (!session) {
-      navigate({ to: '/login' })
+      navigate({ to: '/' });
     }
-  }, [session])
+  }, [session]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
