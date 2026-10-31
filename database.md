@@ -13,6 +13,80 @@
 - Creation_Date
 - Modification_Date
 
+### Employees view
+
+```sql
+create or replace view public.products_public as
+select
+  id,
+  sku,
+  description,
+  id_category,
+  id_brand,
+  price,
+  created_at,
+  modified_at
+from products;
+```
+
+### Function to insert products
+
+```sql
+create or replace function create_product(
+  p_sku text,
+  p_description text,
+  p_category_id uuid,
+  p_brand_id uuid,
+  p_cost numeric,
+  p_price numeric,
+  p_branch_id uuid,
+  p_initial_stock int
+)
+returns uuid as $$
+declare
+  v_product_id uuid;
+begin
+  -- 1. Insertar en tu tabla products actual
+  insert into products (sku, description, id_category, id_brand, cost, price)
+  values (p_sku, p_description, p_category_id, p_brand_id, p_cost, p_price)
+  returning id into v_product_id;
+
+  -- 2. Insertar el stock inicial en la sucursal correspondiente (con manejo de conflicto por si ya existe)
+  insert into branch_stock (id_branch, id_prod, quantity)
+  values (p_branch_id, v_product_id, p_initial_stock)
+  on conflict (id_branch, id_prod)
+  do update set quantity = branch_stock.quantity + excluded.quantity;
+
+  return v_product_id;
+end;
+$$ language plpgsql;
+```
+
+### Example of how to call it in Javascript
+
+```js
+const handleCreateProduct = async (e) => {
+  e.preventDefault();
+
+  const { data, error } = await supabase.rpc('create_product_with_stock', {
+    p_sku: 'CAM-001',
+    p_desc: 'Camisa de lino',
+    p_price: 25000,
+    p_branch_id: 'uuid-de-la-sucursal', // ID del local donde entra este stock
+    p_initial_stock: 10, // Cantidad inicial
+  });
+
+  if (error) {
+    console.error('Error al crear el producto:', error);
+    alert('Hubo un error al guardar el producto');
+  } else {
+    console.log('Producto creado con éxito, ID:', data);
+    alert('¡Producto creado y stock asignado!');
+    // Aquí puedes limpiar el formulario o actualizar tu lista de productos
+  }
+};
+```
+
 ## CATEGORIES
 
 - Id
@@ -94,30 +168,83 @@ const handleCompleteSale = async (
   totalAmount,
   currentBranchId,
   currentUserId,
+  paymentMethodId,
+  customDate,
 ) => {
-  // Preparamos los items en el formato que espera la función RPC (JSON)
   const formattedItems = cartItems.map((item) => ({
     product_id: item.id,
     quantity: item.quantity,
     unit_price: item.price,
   }));
 
-  const { data, error } = await supabase.rpc('register_sale', {
+  // Preparamos los argumentos para la función RPC
+  const rpcArguments = {
     p_branch_id: currentBranchId,
     p_user_id: currentUserId,
     p_total_amount: totalAmount,
+    p_payment_method_id: paymentMethodId,
     p_items: formattedItems,
-  });
+  };
+
+  // Si el usuario eligió una fecha en específico, la agregamos.
+  // Si no, la omitimos para que tome el `now()` por defecto.
+  if (customDate) {
+    rpcArguments.p_sale_date = new Date(customDate).toISOString();
+  }
+
+  const { data, error } = await supabase.rpc('register_sale', rpcArguments);
 
   if (error) {
     console.error('Error al registrar la venta:', error);
     alert('Hubo un error al procesar la venta');
   } else {
-    console.log('Venta registrada con éxito, ID de venta:', data);
-    alert('¡Venta realizada con éxito! El stock ha sido actualizado.');
-    // Limpiar el carrito de compras en tu estado de Vite
+    console.log('Venta registrada con éxito, ID:', data);
+    alert('¡Venta registrada con éxito!');
   }
 };
+```
+
+### Example if there was an error in secondary sales data such as payment method or date
+
+```js
+const { data, error } = await supabase
+  .from('sales')
+  .update({
+    id_payment_method: 'nuevo-uuid-metodo-pago',
+    date: '2026-10-31T15:00:00Z', // Si necesitas ajustar la fecha
+  })
+  .eq('id', 'uuid-de-la-venta');
+```
+
+### Function if there was an error in primary sales data such as products id or stock
+
+```sql
+create or replace function cancel_sale(p_sale_id uuid)
+returns void as $$
+declare
+  v_item record;
+  v_branch_id uuid;
+begin
+  -- 1. Obtener la sucursal de la venta
+  select id_branch into v_branch_id from sales where id = p_sale_id;
+
+  -- 2. Devolver el stock de cada producto que estaba en esa venta
+  for v_item in select id_prod, quantity from sale_items where id_sale = p_sale_id
+  loop
+    update branch_stock
+    set quantity = quantity + v_item.quantity
+    where id_prod = v_item.id_prod and id_branch = v_branch_id;
+  end loop;
+
+  -- 3. Opcional: Eliminar los items y la venta, o cambiar su estado a 'cancelada'
+  -- Si prefieres eliminarlos físicamente (si no usas una columna de estado):
+  delete from sale_items where id_sale = p_sale_id;
+  delete from sales where id = p_sale_id;
+
+  -- (Alternativa recomendada si agregas una columna status a sales:
+  -- update sales set status = 'cancelled' where id = p_sale_id;)
+end;
+$$ language plpgsql;
 ```
 
 ## PAYMENT_METHODS
@@ -143,60 +270,6 @@ const handleCompleteSale = async (
 - Id_Branch
 - Id_Prod
 - quantity
-
-### Function to create new product and update product stock in branch
-
-```sql
-create or replace function create_product(
-  p_sku text,
-  p_desc text,
-  p_price numeric,
-  p_branch_id uuid,
-  p_initial_stock int
-)
-returns uuid as $$
-declare
-  v_product_id uuid;
-begin
-  -- 1. Insertar el producto nuevo y guardar su ID generado
-  insert into products (name, sku, price)
-  values (p_name, p_sku, p_price)
-  returning id into v_product_id;
-
-  -- 2. Insertar el stock inicial en la sucursal correspondiente
-  insert into branch_stock (branch_id, product_id, quantity)
-  values (p_branch_id, v_product_id, p_initial_stock);
-
-  -- Devolver el ID del producto creado
-  return v_product_id;
-end;
-$$ language plpgsql;
-```
-
-### Example of how to call it in Javascript
-
-```js
-const handleCreateProduct = async (e) => {
-  e.preventDefault();
-
-  const { data, error } = await supabase.rpc('create_product_with_stock', {
-    p_sku: 'CAM-001',
-    p_desc: 'Camisa de lino',
-    p_price: 25000,
-    p_branch_id: 'uuid-de-la-sucursal', // ID del local donde entra este stock
-    p_initial_stock: 10, // Cantidad inicial
-  });
-
-  if (error) {
-    console.error('Error al crear el producto:', error);
-    alert('Hubo un error al guardar el producto');
-  } else {
-    console.log('Producto creado con éxito, ID:', data);
-    alert('¡Producto creado y stock asignado!');
-    // Aquí puedes limpiar el formulario o actualizar tu lista de productos
-  }
-};
-```
 
 ## STOCK_TRANSFERS (funcion para transferir el stock de una sucursal a la otra)
 
