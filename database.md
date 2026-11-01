@@ -16,17 +16,16 @@
 ### Employees view
 
 ```sql
-create or replace view public.products_public as
-select
-  id,
-  sku,
-  description,
-  id_category,
-  id_brand,
-  price,
-  created_at,
-  modified_at
-from products;
+create view public.products_public with (security_invoker = on) as
+ SELECT id,
+    sku,
+    description,
+    id_category,
+    id_brand,
+    price,
+    created_at,
+    modified_at
+   FROM products;
 ```
 
 ### Function to insert products
@@ -83,6 +82,91 @@ const handleCreateProduct = async (e) => {
     console.log('Producto creado con éxito, ID:', data);
     alert('¡Producto creado y stock asignado!');
     // Aquí puedes limpiar el formulario o actualizar tu lista de productos
+  }
+};
+```
+
+### Function to update product in Javascript
+
+```js
+const handleUpdateProduct = async (productId, updatedData) => {
+  const { data, error } = await supabase
+    .from('products')
+    .update({
+      sku: updatedData.sku,
+      description: updatedData.description,
+      id_category: updatedData.idCategory,
+      id_brand: updatedData.idBrand,
+      cost: updatedData.cost,
+      price: updatedData.price,
+      // modified_at: new Date().toISOString() // Actualizamos la fecha de modificación pero con el trigger de abajo se hace solo en la base de datos
+    })
+    .eq('id', productId);
+
+  if (error) {
+    console.error('Error al actualizar el producto:', error);
+    alert('Hubo un error al actualizar el producto');
+  } else {
+    console.log('Producto actualizado con éxito');
+    alert('¡Cambios guardados correctamente!');
+  }
+};
+```
+
+### Function to update modified_at when update a row in products
+
+```sql
+-- 1. Crear una función que actualice el campo modified_at
+create or replace function update_modified_column()
+returns trigger as $$
+begin
+  new.modified_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+-- 2. Crear el trigger para la tabla products
+create trigger set_modified_at
+  before update on products
+  for each row
+  execute function update_modified_column();
+```
+
+### Function to update product stock
+
+```sql
+create or replace function adjust_stock(
+  p_product_id uuid,
+  p_branch_id uuid,
+  p_new_quantity int
+)
+returns void as $$
+begin
+  -- Actualiza el stock si ya existe, o lo inserta si nunca existió en esa sucursal
+  insert into branch_stock (id_branch, id_prod, quantity)
+  values (p_branch_id, p_product_id, p_new_quantity)
+  on conflict (id_branch, id_prod) 
+  do update set quantity = p_new_quantity;
+end;
+$$ language plpgsql;
+```
+
+### Use in Javascript
+
+```js
+const handleUpdateStock = async (productId, branchId, newQuantity) => {
+  const { error } = await supabase.rpc('adjust_stock', {
+    p_product_id: productId,
+    p_branch_id: branchId,
+    p_new_quantity: parseInt(newQuantity) // Asegurarnos de que sea número entero
+  });
+
+  if (error) {
+    console.error('Error al actualizar el stock:', error);
+    alert('Hubo un error al actualizar el stock');
+  } else {
+    console.log('Stock actualizado con éxito');
+    alert('¡Stock modificado correctamente!');
   }
 };
 ```
