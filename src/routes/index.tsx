@@ -1,3 +1,4 @@
+import './home.css'
 import { useEffect, useState, useRef } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
@@ -45,32 +46,38 @@ function Index() {
     if (error) {
       alert(error.message);
     } else {
-      console.log({ data });
-      alert('Successfully login!');
       navigate({ to: '/dashboard' });
     }
     setLoading(false);
   };
 
   return (
-    <div>
-      <form onSubmit={handleLogin}>
+    <div id="loginContainer">
+      <form id="loginForm" onSubmit={handleLogin}>
+        <h1>Blanco y Negro</h1>
+
+        <label htmlFor="user_email">E-mail</label>
         <input
+          id="user_email"
+          name="user_email"
           type="email"
-          placeholder="Your email"
+          placeholder="jonhdoe@gmail.com"
           required={true}
           ref={emailInput}
         />
 
+        <label htmlFor="user_password">Contraseña</label>
         <input
+          id="user_password"
+          name="user_password"
           type="password"
-          placeholder="Your password"
+          placeholder="••••••••••"
           required={true}
           ref={passwordInput}
         />
 
         <button disabled={loading}>
-          {loading ? <span>Loading</span> : <span>Enter</span>}
+          {loading ? <span>Cargando...</span> : <span>Ingresar</span>}
         </button>
       </form>
     </div>
