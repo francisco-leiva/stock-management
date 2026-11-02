@@ -1,4 +1,4 @@
-import './home.css'
+import './home.css';
 import { useEffect, useState, useRef } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
@@ -54,6 +54,13 @@ function Index() {
   return (
     <div id="loginContainer">
       <form id="loginForm" onSubmit={handleLogin}>
+        <img
+          src="./images/byn-logo.webp"
+          alt="Logo Blanco y Negro"
+          width={1000}
+          height={1000}
+        />
+
         <h1>Blanco y Negro</h1>
 
         <label htmlFor="user_email">E-mail</label>

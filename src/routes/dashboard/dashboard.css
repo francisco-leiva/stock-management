@@ -1,6 +1,7 @@
 #dashboardAside {
   width: 20rem;
   height: 100svh;
-  border-right: 1px solid #000000;
+  border-right: 1px solid #d0d4e6;
   background-color: #f5f7fb;
+  color: #282834;
 }
