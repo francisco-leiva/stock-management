@@ -1,5 +1,5 @@
 import { supabase } from '@/utils/supabase';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { getSession } from '@/utils/getSession';
 
@@ -21,11 +21,24 @@ export default function Aside() {
 
   return (
     <aside id='dashboardAside'>
-      Aside
+      <nav>
+        <ul>
+          <li>
+            <Link to='/dashboard'>Inicio</Link>
+          </li>
+          <li>
+            <Link to='/dashboard/products'>Productos</Link>
+          </li>
+          <li>
+            <Link to='/dashboard/sales'>Ventas</Link>
+          </li>
+          <li>
+            <Link to='/dashboard/sendtobranch'>Envíos sucursal</Link>
+          </li>
+        </ul>
+      </nav>
 
-      <div>
-        <button onClick={handleLogout}>Log out</button>
-      </div>
+      <button onClick={handleLogout}>Cerrar sesión</button>
     </aside>
   );
 }
