@@ -1,16 +1,9 @@
-import './dashboard.css';
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import Aside from '@/components/dashboard/Aside';
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard/')({
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  return (
-    <>
-      <Aside />
-      <Outlet />
-    </>
-  );
+  return <div>Hello "/dashboard/"!</div>
 }

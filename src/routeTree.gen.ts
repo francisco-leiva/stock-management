@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardProductsRouteImport } from './routes/dashboard/products'
 import { Route as DashboardSalesRouteImport } from './routes/dashboard/sales'
@@ -20,29 +21,35 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardProductsRoute = DashboardProductsRouteImport.update({
-  id: '/dashboard/products',
-  path: '/dashboard/products',
-  getParentRoute: () => rootRouteImport,
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardSalesRoute = DashboardSalesRouteImport.update({
-  id: '/dashboard/sales',
-  path: '/dashboard/sales',
-  getParentRoute: () => rootRouteImport,
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardSendtobranchRoute = DashboardSendtobranchRouteImport.update({
-  id: '/dashboard/sendtobranch',
-  path: '/dashboard/sendtobranch',
-  getParentRoute: () => rootRouteImport,
+  id: '/sendtobranch',
+  path: '/sendtobranch',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/sales': typeof DashboardSalesRoute
   '/dashboard/sendtobranch': typeof DashboardSendtobranchRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/dashboard/products': typeof DashboardProductsRoute
   '/dashboard/sales': typeof DashboardSalesRoute
   '/dashboard/sendtobranch': typeof DashboardSendtobranchRoute
@@ -67,6 +75,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/dashboard/products'
     | '/dashboard/sales'
     | '/dashboard/sendtobranch'
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/dashboard'
     | '/dashboard/products'
     | '/dashboard/sales'
     | '/dashboard/sendtobranch'
@@ -89,10 +99,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardProductsRoute: typeof DashboardProductsRoute
-  DashboardSalesRoute: typeof DashboardSalesRoute
-  DashboardSendtobranchRoute: typeof DashboardSendtobranchRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -104,43 +111,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/': {
       id: '/dashboard/'
-      path: '/dashboard'
+      path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/products': {
       id: '/dashboard/products'
-      path: '/dashboard/products'
+      path: '/products'
       fullPath: '/dashboard/products'
       preLoaderRoute: typeof DashboardProductsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/sales': {
       id: '/dashboard/sales'
-      path: '/dashboard/sales'
+      path: '/sales'
       fullPath: '/dashboard/sales'
       preLoaderRoute: typeof DashboardSalesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/sendtobranch': {
       id: '/dashboard/sendtobranch'
-      path: '/dashboard/sendtobranch'
+      path: '/sendtobranch'
       fullPath: '/dashboard/sendtobranch'
       preLoaderRoute: typeof DashboardSendtobranchRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+interface DashboardRouteRouteChildren {
+  DashboardProductsRoute: typeof DashboardProductsRoute
+  DashboardSalesRoute: typeof DashboardSalesRoute
+  DashboardSendtobranchRoute: typeof DashboardSendtobranchRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardProductsRoute: DashboardProductsRoute,
   DashboardSalesRoute: DashboardSalesRoute,
   DashboardSendtobranchRoute: DashboardSendtobranchRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

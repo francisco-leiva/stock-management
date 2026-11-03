@@ -1,3 +1,7 @@
+#dashboard {
+  display: flex;
+}
+
 #dashboardAside {
   width: 20rem;
   height: 100svh;
