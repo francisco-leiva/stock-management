@@ -10,7 +10,7 @@
   background-color: #ffffff;
   border: 1px solid #d0d4e6;
   border-radius: 0.5rem;
-  width: 28rem;
+  width: clamp(20rem, 60%, 28rem);
   padding: 0 1rem 1rem;
   display: flex;
   flex-direction: column;
