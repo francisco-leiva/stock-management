@@ -1,18 +1,8 @@
 import { supabase } from '@/utils/supabase';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import { getSession } from '@/utils/getSession';
 
 export default function Aside() {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getSession().then((data) => {
-      if (!data) {
-        navigate({ to: '/' });
-      }
-    });
-  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
