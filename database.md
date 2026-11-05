@@ -10,8 +10,8 @@
 - Cost
 - Profit porcentage (only in web page)
 - Price
-- Creation_Date
-- Modification_Date
+- Created_at
+- Modified_at
 
 ### Employees view
 
@@ -145,7 +145,7 @@ begin
   -- Actualiza el stock si ya existe, o lo inserta si nunca existió en esa sucursal
   insert into branch_stock (id_branch, id_prod, quantity)
   values (p_branch_id, p_product_id, p_new_quantity)
-  on conflict (id_branch, id_prod) 
+  on conflict (id_branch, id_prod)
   do update set quantity = p_new_quantity;
 end;
 $$ language plpgsql;
@@ -158,7 +158,7 @@ const handleUpdateStock = async (productId, branchId, newQuantity) => {
   const { error } = await supabase.rpc('adjust_stock', {
     p_product_id: productId,
     p_branch_id: branchId,
-    p_new_quantity: parseInt(newQuantity) // Asegurarnos de que sea número entero
+    p_new_quantity: parseInt(newQuantity), // Asegurarnos de que sea número entero
   });
 
   if (error) {
@@ -354,16 +354,10 @@ $$ language plpgsql;
 - Id_Branch
 - Id_Prod
 - quantity
+- Created_at
+- Modified_at
 
-## STOCK_TRANSFERS (funcion para transferir el stock de una sucursal a la otra)
-
-- Id
-- Id_Prod
-- From_branch_id
-- To_branch_id
-- quantity
-
-### Function to make the transfer
+### Function to send stock to branch
 
 ```sql
 create or replace function transfer_prod(
@@ -376,14 +370,18 @@ returns void as $$
 begin
   -- 1. Descontar del local de origen
   update branch_stock
-  set quantity = quantity - p_quantity
+  set
+    quantity = quantity - p_quantity,
+    modified_at = now()
   where id_prod = p_product_id and id_branch = p_from_branch;
 
   -- 2. Sumar al local de destino (o insertarlo si no existe)
   insert into branch_stock (id_branch, id_prod, quantity)
   values (p_to_branch, p_product_id, p_quantity)
   on conflict (id_branch, id_prod) -- Requiere un Unique Constraint (ver nota abajo)
-  do update set quantity = branch_stock.quantity + excluded.quantity;
+  do update set
+    quantity = branch_stock.quantity + excluded.quantity,
+    modified_at = now();
 
 end;
 $$ language plpgsql;
