@@ -357,32 +357,64 @@ $$ language plpgsql;
 - Created_at
 - Modified_at
 
-### Function to send stock to branch
+## STOCK_TRANSFERS
+
+- Id
+- From_branch_id
+- To_branch_id
+- Id_User
+- Created_at
+
+## STOCK_TRANSFER_ITEMS
+
+- Id
+- Id_transfer
+- Id_Prod
+- Quantity
+
+### Function to transfer stock to branch and update stock in branch
 
 ```sql
-create or replace function transfer_prod(
-  p_product_id uuid,
+create or replace function create_stock_transfer(
   p_from_branch uuid,
   p_to_branch uuid,
-  p_quantity int
+  p_user_id uuid,
+  p_items jsonb -- Recibe la lista de productos y cantidades
 )
-returns void as $$
+returns uuid as $$
+declare
+  v_transfer_id uuid;
+  v_item record;
 begin
-  -- 1. Descontar del local de origen
-  update branch_stock
-  set
-    quantity = quantity - p_quantity,
-    modified_at = now()
-  where id_prod = p_product_id and id_branch = p_from_branch;
+  -- 1. Crear la cabecera del remito
+  insert into stock_transfers (from_branch_id, to_branch_id, id_user)
+  values (p_from_branch, p_to_branch, p_user_id)
+  returning id into v_transfer_id;
 
-  -- 2. Sumar al local de destino (o insertarlo si no existe)
-  insert into branch_stock (id_branch, id_prod, quantity)
-  values (p_to_branch, p_product_id, p_quantity)
-  on conflict (id_branch, id_prod) -- Requiere un Unique Constraint (ver nota abajo)
-  do update set
-    quantity = branch_stock.quantity + excluded.quantity,
-    modified_at = now();
+  -- 2. Recorrer cada producto del envío
+  for v_item in select * from jsonb_to_recordset(p_items) as x(product_id uuid, quantity int)
+  loop
+    -- A. Registrar el item en el detalle del remito
+    insert into stock_transfer_items (id_transfer, id_prod, quantity)
+    values (v_transfer_id, v_item.product_id, v_item.quantity);
 
+    -- B. Descontar del local de origen
+    update branch_stock
+    set
+      quantity = quantity - v_item.quantity,
+      modified_at = now()
+    where id_prod = v_item.product_id and id_branch = p_from_branch;
+
+    -- C. Sumar al local de destino (o insertarlo si no existe)
+    insert into branch_stock (id_branch, id_prod, quantity)
+    values (p_to_branch, v_item.product_id, v_item.quantity)
+    on conflict (id_branch, id_prod)
+    do update set
+      quantity = branch_stock.quantity + excluded.quantity,
+      modified_at = now();
+  end loop;
+
+  return v_transfer_id;
 end;
 $$ language plpgsql;
 ```
