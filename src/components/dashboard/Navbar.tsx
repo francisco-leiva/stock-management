@@ -12,6 +12,12 @@ export default function Navbar() {
   return (
     <>
       <header id='dashboardHeader'>
+        <div id='navbarMenu'>
+          <button>
+            <img src='./images/menu.svg' alt='Menu' width={50} height={50} />
+          </button>
+        </div>
+
         <nav aria-label='Main Navbar'>
           <ul>
             <li>
@@ -28,7 +34,10 @@ export default function Navbar() {
             </li>
           </ul>
         </nav>
-        <button onClick={handleLogout}>Cerrar sesión</button>
+
+        <button id='closeSessionButton' onClick={handleLogout}>
+          Cerrar sesión
+        </button>
       </header>
     </>
   );

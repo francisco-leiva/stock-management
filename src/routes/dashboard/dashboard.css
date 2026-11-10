@@ -1,21 +1,32 @@
 a {
   text-decoration: none;
+  color: #000000;
 }
 
 #dashboardHeader {
   padding: 1rem;
   font-size: 1.5rem;
+  border-bottom: 1px solid #d0d4e6;
+}
+
+#navbarMenu {
+  text-align: end;
+}
+
+#navbarMenu button {
+  border: none;
+  background-color: #ffffff;
 }
 
 #dashboardHeader nav ul {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
   list-style-type: none;
 }
 
-#dashboardHeader button {
-  margin-top: 0.5rem;
+#closeSessionButton {
+  margin-top: 1rem;
   border: none;
   background-color: #ffffff;
   font-size: 1.5rem;
@@ -23,6 +34,17 @@ a {
 
 #dashboardAside {
   display: none;
+}
+
+.dashboardMain {
+  margin: 1rem;
+}
+
+#indexContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 @media screen and (width >= 900px) {
