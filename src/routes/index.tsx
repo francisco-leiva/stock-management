@@ -52,33 +52,33 @@ function Index() {
   };
 
   return (
-    <div id="loginContainer">
-      <form id="loginForm" onSubmit={handleLogin}>
+    <div id='loginContainer'>
+      <form id='loginForm' onSubmit={handleLogin}>
         <img
-          src="./images/byn-logo.webp"
-          alt="Logo Blanco y Negro"
+          src='./images/byn-logo.svg'
+          alt='Logo Blanco y Negro'
           width={1000}
           height={1000}
         />
 
         <h1>Blanco y Negro</h1>
 
-        <label htmlFor="user_email">E-mail</label>
+        <label htmlFor='user_email'>E-mail</label>
         <input
-          id="user_email"
-          name="user_email"
-          type="email"
-          placeholder="jonhdoe@gmail.com"
+          id='user_email'
+          name='user_email'
+          type='email'
+          placeholder='jonhdoe@gmail.com'
           required={true}
           ref={emailInput}
         />
 
-        <label htmlFor="user_password">Contraseña</label>
+        <label htmlFor='user_password'>Contraseña</label>
         <input
-          id="user_password"
-          name="user_password"
-          type="password"
-          placeholder="••••••••••"
+          id='user_password'
+          name='user_password'
+          type='password'
+          placeholder='••••••••••'
           required={true}
           ref={passwordInput}
         />
