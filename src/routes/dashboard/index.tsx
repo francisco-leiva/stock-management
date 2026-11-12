@@ -6,7 +6,7 @@ export const Route = createFileRoute('/dashboard/')({
 
 function RouteComponent() {
   return (
-    <div className='dashboardMain'>
+    <div id='dashboardMain'>
       <div id='indexContainer'>
         <img
           src='./images/byn-logo.svg'

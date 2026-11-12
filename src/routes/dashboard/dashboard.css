@@ -25,11 +25,15 @@ a {
   list-style-type: none;
 }
 
-#closeSessionButton {
+#closeSessionNav {
   margin-top: 1rem;
+  font-size: 1.5rem;
+}
+
+.closeSessionButton {
   border: none;
   background-color: #ffffff;
-  font-size: 1.5rem;
+  cursor: pointer;
 }
 
 #dashboardAside {
@@ -52,11 +56,25 @@ a {
     display: flex;
   }
 
+  #dashboardHeader {
+    display: none;
+  }
+
   #dashboardAside {
+    display: inline-block;
     width: 20rem;
     height: 100svh;
     border-right: 1px solid #d0d4e6;
     background-color: #f5f7fb;
     color: #282834;
+  }
+
+  #dashboardMain {
+    flex: auto;
+  }
+
+  #indexContainer {
+    height: 100%;
+    justify-content: center;
   }
 }

@@ -28,7 +28,9 @@ export default function Aside() {
         </ul>
       </nav>
 
-      <button onClick={handleLogout}>Cerrar sesión</button>
+      <button className='closeSessionButton' onClick={handleLogout}>
+        Cerrar sesión
+      </button>
     </aside>
   );
 }

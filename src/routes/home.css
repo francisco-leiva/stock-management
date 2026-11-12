@@ -49,6 +49,7 @@
   color: #ffffff;
   border: none;
   border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 #loginForm button:disabled {

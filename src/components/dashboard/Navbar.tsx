@@ -35,7 +35,11 @@ export default function Navbar() {
           </ul>
         </nav>
 
-        <button id='closeSessionButton' onClick={handleLogout}>
+        <button
+          id='closeSessionNav'
+          className='closeSessionButton'
+          onClick={handleLogout}
+        >
           Cerrar sesión
         </button>
       </header>
