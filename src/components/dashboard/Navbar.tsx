@@ -13,35 +13,45 @@ export default function Navbar() {
     <>
       <header id='dashboardHeader'>
         <div id='navbarMenu'>
-          <button>
+          <input
+            id='menuCheckbox'
+            name='menuCheckbox'
+            aria-label='menuCheckbox'
+            type='checkbox'
+            defaultChecked
+          />
+
+          <label htmlFor='menuCheckbox'>
             <img src='./images/menu.svg' alt='Menu' width={50} height={50} />
-          </button>
+          </label>
         </div>
 
-        <nav aria-label='Main Navbar'>
-          <ul>
-            <li>
-              <Link to='/dashboard'>Inicio</Link>
-            </li>
-            <li>
-              <Link to='/dashboard/products'>Productos</Link>
-            </li>
-            <li>
-              <Link to='/dashboard/sales'>Ventas</Link>
-            </li>
-            <li>
-              <Link to='/dashboard/sendtobranch'>Envíos sucursal</Link>
-            </li>
-          </ul>
-        </nav>
+        <div id='navbar'>
+          <nav aria-label='Main Navbar'>
+            <ul>
+              <li>
+                <Link to='/dashboard'>Inicio</Link>
+              </li>
+              <li>
+                <Link to='/dashboard/products'>Productos</Link>
+              </li>
+              <li>
+                <Link to='/dashboard/sales'>Ventas</Link>
+              </li>
+              <li>
+                <Link to='/dashboard/sendtobranch'>Envíos sucursal</Link>
+              </li>
+            </ul>
+          </nav>
 
-        <button
-          id='closeSessionNav'
-          className='closeSessionButton'
-          onClick={handleLogout}
-        >
-          Cerrar sesión
-        </button>
+          <button
+            id='closeSessionNav'
+            className='closeSessionButton'
+            onClick={handleLogout}
+          >
+            Cerrar sesión
+          </button>
+        </div>
       </header>
     </>
   );
