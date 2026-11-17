@@ -11,7 +11,7 @@ a {
 
 #dashboardHeader {
   padding: 1rem;
-  font-size: 1.5rem;
+  font-size: 1rem;
   border-bottom: 1px solid #d0d4e6;
 }
 
@@ -31,6 +31,20 @@ a {
   display: none;
 }
 
+#navbar {
+  animation: 1s linear slide-in;
+}
+
+@keyframes slide-in {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: auto;
+  }
+}
+
 #dashboardHeader nav ul {
   display: flex;
   flex-direction: column;
@@ -40,7 +54,7 @@ a {
 
 #closeSessionNav {
   margin-top: 1rem;
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 
 .closeSessionButton {
