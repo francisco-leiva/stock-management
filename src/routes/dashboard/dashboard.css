@@ -28,21 +28,13 @@ a {
 }
 
 #navbarMenu:has(input:checked) ~ #navbar {
-  display: none;
+  max-height: 12rem;
 }
 
 #navbar {
-  animation: 1s linear slide-in;
-}
-
-@keyframes slide-in {
-  from {
-    height: 0;
-  }
-
-  to {
-    height: auto;
-  }
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
 }
 
 #dashboardHeader nav ul {
@@ -55,11 +47,16 @@ a {
 #closeSessionNav {
   margin-top: 1rem;
   font-size: 1rem;
+  background-color: #ffffff;
+}
+
+#closeSessionAside {
+  background-color: #f5f7fb;
+  font-size: 1rem;
 }
 
 .closeSessionButton {
   border: none;
-  background-color: #ffffff;
   cursor: pointer;
 }
 
@@ -95,7 +92,6 @@ a {
     height: 100svh;
     border-right: 1px solid #d0d4e6;
     background-color: #f5f7fb;
-    color: #282834;
   }
 
   #dashboardMain {

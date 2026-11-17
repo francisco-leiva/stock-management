@@ -1,12 +1,18 @@
 import { supabase } from '@/utils/supabase';
 import { Link, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const [check, setCheck] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate({ to: '/' });
+  };
+
+  const handleCheck = () => {
+    setCheck(() => !check);
   };
 
   return (
@@ -18,10 +24,10 @@ export default function Navbar() {
             name='menuCheckbox'
             aria-label='menuCheckbox'
             type='checkbox'
-            defaultChecked
+            checked={check}
           />
 
-          <label htmlFor='menuCheckbox'>
+          <label htmlFor='menuCheckbox' onClick={handleCheck}>
             <img src='./images/menu.svg' alt='Menu' width={50} height={50} />
           </label>
         </div>
