@@ -44,6 +44,10 @@ a {
   list-style-type: none;
 }
 
+#dashboardHeader nav ul li a {
+  text-transform: capitalize;
+}
+
 #closeSessionNav {
   margin-top: 1rem;
   font-size: 1rem;

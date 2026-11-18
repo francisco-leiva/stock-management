@@ -11,8 +11,8 @@ function RouteComponent() {
         <img
           src='./images/byn-logo.svg'
           alt='Logo Blanco y Negro'
-          width={80}
-          height={80}
+          width={150}
+          height={150}
         />
 
         <h2>Bienvenido @usuario</h2>
