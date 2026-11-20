@@ -54,11 +54,6 @@ a {
   background-color: #ffffff;
 }
 
-#closeSessionAside {
-  background-color: #f5f7fb;
-  font-size: 1rem;
-}
-
 .closeSessionButton {
   border: none;
   cursor: pointer;
@@ -83,7 +78,8 @@ a {
 
 @media screen and (width >= 900px) {
   #dashboard {
-    display: flex;
+    grid-template-rows: auto;
+    grid-template-columns: auto 1fr;
   }
 
   #dashboardHeader {
@@ -95,11 +91,11 @@ a {
     width: 20rem;
     height: 100svh;
     border-right: 1px solid #d0d4e6;
-    background-color: #f5f7fb;
   }
 
-  #dashboardMain {
-    flex: auto;
+  #closeSessionAside {
+    background-color: #ffffff;
+    font-size: 1rem;
   }
 
   #indexContainer {

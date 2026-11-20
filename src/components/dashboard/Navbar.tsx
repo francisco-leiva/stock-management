@@ -18,8 +18,8 @@ export default function Navbar() {
     navigate({ to: '/' });
   };
 
-  const handleCheck = () => {
-    setCheck(() => !check);
+  const handleUnchecked = () => {
+    setCheck(false);
   };
 
   return (
@@ -31,10 +31,11 @@ export default function Navbar() {
             name='menuCheckbox'
             aria-label='menuCheckbox'
             type='checkbox'
+            onChange={(e) => setCheck(e.target.checked)}
             checked={check}
           />
 
-          <label htmlFor='menuCheckbox' onClick={handleCheck}>
+          <label htmlFor='menuCheckbox'>
             <img src='./images/menu.svg' alt='Menu' width={40} height={40} />
           </label>
         </div>
@@ -44,7 +45,7 @@ export default function Navbar() {
             <ul>
               {Object.entries(pages).map(([key, value]) => (
                 <li key={key}>
-                  <Link to={value} onClick={handleCheck}>
+                  <Link to={value} onClick={handleUnchecked}>
                     {key}
                   </Link>
                 </li>
