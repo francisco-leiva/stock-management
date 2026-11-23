@@ -4,25 +4,26 @@ import { getUser } from '@/utils/getUser';
 
 export const Route = createFileRoute('/dashboard/')({
   component: RouteComponent,
+  loader: async () => {
+    const { data, error } = await getUser();
+
+    return { data, error };
+  },
 });
 
 function RouteComponent() {
+  const { data, error } = Route.useLoaderData();
   const [name, setName] = useState('@usuario');
 
   useEffect(() => {
-    getUser().then((res) => {
-      const { data, error } = res;
+    if (error) {
+      console.error(error);
+    }
 
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      if (data) {
-        const userName = data[0].name;
-        setName(userName);
-      }
-    });
+    if (data) {
+      const userName = data[0].name;
+      setName(userName);
+    }
   }, []);
 
   return (

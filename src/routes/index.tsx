@@ -1,31 +1,28 @@
 import './home.css';
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import { supabase } from '@/utils/supabase';
 import { getSession } from '@/utils/getSession';
-import type { Session } from '@supabase/supabase-js';
 
 export const Route = createFileRoute('/')({
   component: Index,
+  loader: async () => {
+    const session = await getSession();
+
+    if (session) {
+      throw Route.redirect({ to: '/dashboard' });
+    }
+  },
 });
 
 function Index() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [session, setSession] = useState<Session | null>();
 
   const emailInput = useRef<HTMLInputElement>(null);
   const passwordInput = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    getSession().then((n) => setSession(n));
-
-    if (session) {
-      navigate({ to: '/dashboard' });
-    }
-  }, [session]);
 
   const handleLogin = async (event: React.ChangeEvent) => {
     event.preventDefault();
@@ -38,7 +35,7 @@ function Index() {
       throw new Error('Form fields are incomplete');
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
