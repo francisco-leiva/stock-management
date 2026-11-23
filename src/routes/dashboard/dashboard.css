@@ -29,12 +29,13 @@ a {
 
 #navbarMenu:has(input:checked) ~ #navbar {
   max-height: 12rem;
+  transition: max-height 0.3s ease-in-out;
 }
 
 #navbar {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
+  transition: none;
 }
 
 #dashboardHeader nav ul {
@@ -87,13 +88,57 @@ a {
   }
 
   #dashboardAside {
-    display: inline-block;
-    width: 20rem;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    width: 16rem;
     height: 100svh;
     border-right: 1px solid #d0d4e6;
+    transition: width 0.3s ease-in-out;
   }
 
-  #closeSessionAside {
+  #dashboardAside.closeAside {
+    width: 3.75rem;
+
+    & nav ul li a span {
+      display: none;
+    }
+
+    & #asideCloseSession span {
+      display: none;
+    }
+  }
+
+  #asideHeader {
+    margin: 1rem;
+    display: flex;
+    justify-content: end;
+  }
+
+  #dashboardAside nav {
+    margin: 1rem;
+  }
+
+  #dashboardAside nav ul {
+    list-style: none;
+  }
+
+  #dashboardAside nav ul li {
+    margin-block: 1rem;
+  }
+
+  #dashboardAside nav ul li a {
+    width: max-content;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  #asideCloseSession {
+    width: max-content;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 1rem;
     background-color: #ffffff;
     font-size: 1rem;
   }
